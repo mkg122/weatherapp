@@ -1,9 +1,12 @@
 package com.weatherapp.forecast.service;
 
+import com.weatherapp.forecast.dto.ForecastSummaryDTO;
+import com.weatherapp.forecast.dto.HourlyForecastDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-public class
-ForecastServiceImp implements ForecastService {
+@Service
+public class ForecastServiceImp implements ForecastService {
     private ForecastApi forecastApi;
 
     @Autowired
@@ -12,13 +15,13 @@ ForecastServiceImp implements ForecastService {
     }
 
     @Override
-    public Object getForecastSummary(String city){
-        return null;
+    public ForecastSummaryDTO getForecastSummary(String city){
+        return forecastApi.getForecastSummary(city);
     }
 
     @Override
-    public Object getForecastHourly(String city){
-        return null;
+    public HourlyForecastDTO getForecastHourly(String city){
+        return forecastApi.getForecastHourly(city);
     }
 
 }

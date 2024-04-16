@@ -1,7 +1,10 @@
 package com.weatherapp.forecast.service;
 
-public interface ForecastApi {
-    public Object getForecastSummary(String city);
+import com.weatherapp.forecast.dto.ForecastSummaryDTO;
+import com.weatherapp.forecast.dto.HourlyForecastDTO;
 
-    public Object setForecastHourly(String city);
+public interface ForecastApi {
+    public ForecastSummaryDTO getForecastSummary(String city);
+
+    public HourlyForecastDTO getForecastHourly(String city);
 }

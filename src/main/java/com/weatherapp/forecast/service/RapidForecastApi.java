@@ -3,12 +3,15 @@ package com.weatherapp.forecast.service;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.weatherapp.forecast.dto.ForecastSummaryDTO;
+import com.weatherapp.forecast.dto.HourlyForecastDTO;
+import org.springframework.stereotype.Service;
 
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
+@Service
 public class RapidForecastApi implements ForecastApi{
 
     String rapidUrl="https://forecast9.p.rapidapi.com/rapidapi/forecast/";
@@ -17,11 +20,12 @@ public class RapidForecastApi implements ForecastApi{
 
     String rapidHost="forecast9.p.rapidapi.com";
     @Override
-    public Object getForecastSummary(String city) {
+    public ForecastSummaryDTO getForecastSummary(String city) {
 
         StringBuilder sb = new StringBuilder(rapidUrl);
         sb.append(city);
         sb.append("/summary/");
+
         URI uri = URI.create(sb.toString());
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(uri)
@@ -47,7 +51,7 @@ public class RapidForecastApi implements ForecastApi{
     }
 
     @Override
-    public Object setForecastHourly(String city) {
+    public HourlyForecastDTO getForecastHourly(String city) {
 
         StringBuilder sb = new StringBuilder(rapidUrl);
         sb.append(city);
@@ -63,7 +67,13 @@ public class RapidForecastApi implements ForecastApi{
         try {
             HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
 
-            System.out.println(response.body());
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+            HourlyForecastDTO dto = mapper.readValue(response.body(), HourlyForecastDTO.class);
+
+            return dto;
         } catch (Exception e) {
             e.printStackTrace();
         }

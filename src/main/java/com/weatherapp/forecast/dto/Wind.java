@@ -11,4 +11,7 @@ public class Wind {
     private Double avg;
     private WindGusts gusts;
     private Boolean significationWind;
+    private double min;
+    private double max;
+    private String text;
 }
