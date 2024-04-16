@@ -1,5 +1,6 @@
 package com.weatherapp.forecast.controller;
 
+import com.weatherapp.config.exception.CustomException;
 import com.weatherapp.forecast.dto.ForecastSummaryDTO;
 import com.weatherapp.forecast.dto.HourlyForecastDTO;
 import com.weatherapp.forecast.service.ForecastService;
@@ -24,26 +25,25 @@ public class ForecastController {
 
        ForecastSummaryDTO forecastSummaryDTO = forecastService.getForecastSummary(city);
 
-       if(forecastSummaryDTO!=null){
-           return ResponseEntity
-                   .status(HttpStatus.OK.value())
-                   .body(forecastSummaryDTO);
+       if(forecastSummaryDTO==null){
+           throw new CustomException("forecast summary is not available for the city: "+city, HttpStatus.NOT_FOUND);
        }
-
-       return ResponseEntity.status(HttpStatus.NOT_FOUND.value()).build();
+       return ResponseEntity
+               .status(HttpStatus.OK.value())
+               .body(forecastSummaryDTO);
     }
 
     @GetMapping("hourly")
     ResponseEntity<HourlyForecastDTO> getForecastHourly(@RequestParam String city){
 
         HourlyForecastDTO hourlyForecastDTO = forecastService.getForecastHourly(city);
-        if(hourlyForecastDTO!=null){
-            return ResponseEntity
-                    .status(HttpStatus.OK.value())
-                    .body(hourlyForecastDTO);
+        if(hourlyForecastDTO==null){
+           throw new CustomException("Hourly forecast is not available for the city: "+city, HttpStatus.NOT_FOUND);
         }
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND.value()).build();
+        return ResponseEntity
+                .status(HttpStatus.OK.value())
+                .body(hourlyForecastDTO);
 
     }
 
