@@ -4,6 +4,7 @@ import com.weatherapp.config.exception.CustomException;
 import com.weatherapp.forecast.dto.ForecastSummaryDTO;
 import com.weatherapp.forecast.dto.HourlyForecastDTO;
 import com.weatherapp.forecast.service.ForecastService;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public class ForecastController {
 
 
     @GetMapping("summary")
-    ResponseEntity<ForecastSummaryDTO> getForecastSummary(@RequestParam String city){
+    ResponseEntity<ForecastSummaryDTO> getForecastSummary(@NotNull @RequestParam String city){
 
        ForecastSummaryDTO forecastSummaryDTO = forecastService.getForecastSummary(city);
 
@@ -34,7 +35,7 @@ public class ForecastController {
     }
 
     @GetMapping("hourly")
-    ResponseEntity<HourlyForecastDTO> getForecastHourly(@RequestParam String city){
+    ResponseEntity<HourlyForecastDTO> getForecastHourly(@NotNull @RequestParam String city){
 
         HourlyForecastDTO hourlyForecastDTO = forecastService.getForecastHourly(city);
         if(hourlyForecastDTO==null){
