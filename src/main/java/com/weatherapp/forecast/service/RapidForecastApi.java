@@ -2,8 +2,10 @@ package com.weatherapp.forecast.service;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.weatherapp.config.exception.CustomException;
 import com.weatherapp.forecast.dto.ForecastSummaryDTO;
 import com.weatherapp.forecast.dto.HourlyForecastDTO;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
@@ -19,6 +21,7 @@ public class RapidForecastApi implements ForecastApi{
     String rapidAPIKey="588dbbe6e4msh3988266585d5dfep116847jsn7737beceae47";
 
     String rapidHost="forecast9.p.rapidapi.com";
+
     @Override
     public ForecastSummaryDTO getForecastSummary(String city) {
 
@@ -37,17 +40,26 @@ public class RapidForecastApi implements ForecastApi{
         try {
             HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
 
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            switch (response.statusCode()) {
+                case 200:
+                    ObjectMapper mapper =new ObjectMapper();
+                    mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+                    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-            ForecastSummaryDTO dto = mapper.readValue(response.body(), ForecastSummaryDTO.class);
+                    ForecastSummaryDTO dto = mapper.readValue(response.body(), ForecastSummaryDTO.class);
 
-            return dto;
+                    return dto;
+
+                case 404:
+                    throw new CustomException("forecast summary is not available for the city: "+city, HttpStatus.NOT_FOUND);
+
+                default:
+                    throw new CustomException("Unable to process your request.", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
         }catch (Exception e) {
-            e.printStackTrace();
+            throw new CustomException("Unable to process your request.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return null;
     }
 
     @Override
@@ -67,18 +79,26 @@ public class RapidForecastApi implements ForecastApi{
         try {
             HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
 
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            switch (response.statusCode()) {
+                case 200:
+                    ObjectMapper mapper = new ObjectMapper();
+                    mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+                    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-            HourlyForecastDTO dto = mapper.readValue(response.body(), HourlyForecastDTO.class);
+                    HourlyForecastDTO dto = mapper.readValue(response.body(), HourlyForecastDTO.class);
 
-            return dto;
-        } catch (Exception e) {
-            e.printStackTrace();
+                    return dto;
+
+                case 404:
+                    throw new CustomException("Hourly forecast is not available for the city: "+city, HttpStatus.NOT_FOUND);
+
+                default:
+                    throw new CustomException("Unable to process your request.", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
+        }catch (Exception e) {
+            throw new CustomException("Unable to process your request.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        return null;
     }
 
 }

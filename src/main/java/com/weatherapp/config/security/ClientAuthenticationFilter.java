@@ -18,7 +18,7 @@ public class ClientAuthenticationFilter  extends OncePerRequestFilter {
 
     private final Map<String, String> clientCredentials = new HashMap<>();
     {
-        clientCredentials.put("client1", "clientsecret1");
+        clientCredentials.put("client1", "clientsecret0123456789");
     }
 
 
